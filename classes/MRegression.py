@@ -16,3 +16,9 @@ class MRegression:
         N = X_new.shape[0]
         X_new = np.column_stack((np.ones(N), X_new))
         return X_new @ self.beta
+
+    def show(self) -> None:
+        if self.beta is None:
+            raise ValueError("Modelo ainda não foi treinado. Chame fit() antes.")
+        for i, b in enumerate(self.beta):
+            print(f"b_{i} = {b:.4f}")
