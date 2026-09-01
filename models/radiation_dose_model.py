@@ -56,3 +56,21 @@ except ValueError as e:
 status_alt = ModelStatus(y_true=y, y_pred=model_alternativo.predict(X_alternativo))
 print(f"R^2 = {status_alt.coefficient_determination():.4f}")
 print(f"R^2 ajustado = {status_alt.adjusted_coefficient_determination(k=X_alternativo.shape[1]):.4f}")
+
+print(f"(f) Cenário com Intercepto Forçado a Zero: Suponha que, por razões teóricas, você imponha a restrição de que o intercepto deve ser zero. Qual é a interpretação prática dessa decisão? Compare as métricas R2 e RMSE deste modelo com o modelo com intercepto. Qual você escolheria e por quê?")
+model_sem_intercepto = MRegression(X=X, y=y, fit_intercept=False)
+model_sem_intercepto.fit()
+try:
+    model_sem_intercepto.show()
+except ValueError as e:
+    print(e)
+
+status_sem_intercepto = ModelStatus(y_true=y, y_pred=model_sem_intercepto.predict(X))
+
+print(f"Modelo COM intercepto:  R^2 = {status.coefficient_determination():.4f} | RMSE = {status.rmse():.4f}")
+print(f"Modelo SEM intercepto:  R^2 = {status_sem_intercepto.coefficient_determination():.4f} | RMSE = {status_sem_intercepto.rmse():.4f}")
+
+print(f"-> Interpretacao pratica: forcar b_0 = 0 significa assumir que, sem corrente (mAmp = 0) e sem tempo de exposicao (Tempo = 0), a dose de radiacao e exatamente zero, ou seja, a reta de regressao passa obrigatoriamente pela origem e todo o efeito e atribuido apenas aos preditores. Em tese isso faz sentido fisico (aparelho desligado nao emite radiacao), mas na pratica os dados so foram observados numa faixa distante da origem, entao a restricao extrapola o modelo para uma regiao onde nao ha observacoes.")
+print(f"-> Comparacao: o modelo sem intercepto e um caso restrito do modelo completo, entao seu ajuste nunca pode ser melhor. Aqui o intercepto estimado e grande e negativo (b_0 = -433.81), o que mostra que a restricao b_0 = 0 esta longe do que os dados indicam: o R^2 cai de 0.8431 para 0.7631 e o RMSE sobe de 233.52 para 286.92 (cerca de 23% de erro a mais). Os coeficientes tambem mudam bastante (b_1 vai de 17.90 para 4.88), porque sem o intercepto eles precisam absorver o nivel medio da resposta.")
+print(f"-> Escolha: eu ficaria com o modelo COM intercepto. A perda de ajuste ao forcar b_0 = 0 e grande e os coeficientes ficam distorcidos, perdendo a interpretacao de efeito marginal de cada variavel. O intercepto negativo nao precisa ter sentido fisico: ele so ajusta o nivel da reta dentro da faixa observada dos dados, e nao deve ser lido como a dose prevista em mAmp = 0 e Tempo = 0, que esta fora dessa faixa.")
+print(f"-> Obs: o R^2 do modelo sem intercepto foi calculado com a mesma formula (1 - SQres/SQtot em torno da media), entao ele nao tem a interpretacao usual de proporcao de variancia explicada e pode ate ficar negativo; por isso o RMSE e a comparacao mais confiavel entre os dois modelos.")

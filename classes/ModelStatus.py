@@ -16,3 +16,7 @@ class ModelStatus:
         n = self.y_true.shape[0]
         r2 = self.coefficient_determination()
         return 1 - (1 - r2) * (n - 1) / (n - k - 1)
+
+    def rmse(self) -> float:
+        # raiz do erro quadratico medio, na mesma unidade da variavel resposta
+        return float(np.sqrt(np.mean((self.y_true - self.y_pred) ** 2)))
