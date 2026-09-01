@@ -19,4 +19,12 @@ class ModelStatus:
 
     def rmse(self) -> float:
         # raiz do erro quadratico medio, na mesma unidade da variavel resposta
-        return float(np.sqrt(np.mean((self.y_true - self.y_pred) ** 2)))
+        return float(np.sqrt(self.mse()))
+
+    def mse(self) -> float:
+        # erro quadratico medio, penaliza mais os erros grandes
+        return float(np.mean((self.y_true - self.y_pred) ** 2))
+
+    def mae(self) -> float:
+        # erro absoluto medio, na mesma unidade da variavel resposta
+        return float(np.mean(np.abs(self.y_true - self.y_pred)))
