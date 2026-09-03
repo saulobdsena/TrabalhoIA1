@@ -1,30 +1,36 @@
 import numpy as np
 
 class MRegression:
-    def __init__(self, X, y, fit_intercept=True):
+    def __init__(self, X, y, fit_intercept: bool = True):
         self.X = np.atleast_2d(np.asarray(X, dtype=float)) # Matriz de regressao -> Dados que serao calculados
         self.y = np.asarray(y, dtype=float) # Vetor de respostas
-        self.fit_intercept = fit_intercept # se False, ajusta o modelo sem intercepto (beta_0 = 0)
+        self.fit_intercept = fit_intercept # se False, forca o intercepto (b_0) a ser zero
         self.beta = None # coeficientes estimados
         self.N = self.X.shape[0] # numero de observacoes (linhas)
         self.p = self.X.shape[1] # numero de regressores (sem contar o intercepto)
 
-    def _design(self, X):
-        # Monta a matriz de projeto, adicionando a coluna de 1s quando ha intercepto.
+    def _design_matrix(self, X):
+        # Monta a matriz de regressao, com ou sem a coluna de 1s do intercepto
         X = np.atleast_2d(np.asarray(X, dtype=float))
-        if self.fit_intercept:
-            return np.column_stack((np.ones(X.shape[0]), X))
-        return X
+        if not self.fit_intercept:
+            return X
+        return np.column_stack((np.ones(X.shape[0]), X))
 
     def fit(self):
         # OLS (minimos quadrados): beta = (XtX)^-1 Xt y
-        Xb = self._design(self.X) # nao modifica self.X para nao afetar o calculo do R^2
+        Xb = self._design_matrix(self.X) # nao modifica self.X para nao afetar o calculo do R^2
         self.beta = np.linalg.pinv(Xb.T @ Xb) @ Xb.T @ self.y
         return self
 
     def predict(self, X_new):
-        Xb = self._design(X_new)
-        return Xb @ self.beta
+        return self._design_matrix(X_new) @ self.beta
+
+    def show(self) -> None:
+        if self.beta is None:
+            raise ValueError("Modelo ainda não foi treinado. Chame fit() antes.")
+        start = 0 if self.fit_intercept else 1
+        for i, b in enumerate(self.beta, start=start):
+            print(f"b_{i} = {b:.4f}")
 
     # --- Diagnostico e metricas (implementadas na mao, sem sklearn) ---
 
