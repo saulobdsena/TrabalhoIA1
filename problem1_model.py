@@ -73,3 +73,30 @@ print(
     "  modelo mais do que o esperado ao acaso. Por isso e preferido para\n"
     "  comparar modelos com quantidades diferentes de preditores."
 )
+
+# --- (f) Modelo alternativo: somente arsenio na agua ---
+modelo_agua = MRegression(agua.reshape(-1, 1), y).fit()
+
+# --- (g) Modelo completo com intercepto forcado a zero ---
+modelo_sem_intercepto = MRegression(X, y, fit_intercept=False).fit()
+
+
+# --- (h) Comparacao das metricas ---
+def mostrar_metricas(nome, modelo, mostrar_r2_ajustado=True):
+    print(f"\n{nome}")
+    print(f"Coeficientes: {modelo.beta}")
+    print(f"R^2:          {modelo.r2():.5f}")
+    if mostrar_r2_ajustado:
+        print(f"R^2 ajustado: {modelo.r2_adj():.5f}")
+    print(f"MSE:          {modelo.mse():.5f}")
+    print(f"RMSE:         {modelo.rmse():.5f}")
+    print(f"MAE:          {modelo.mae():.5f}")
+
+
+mostrar_metricas("(h) Modelo completo", model)
+mostrar_metricas("(f/h) Modelo somente com arsenio na agua", modelo_agua)
+mostrar_metricas(
+    "(g) Modelo com intercepto forcado a zero",
+    modelo_sem_intercepto,
+    mostrar_r2_ajustado=False,
+)
